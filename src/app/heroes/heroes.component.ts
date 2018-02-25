@@ -19,16 +19,18 @@ export class HeroesComponent implements OnInit {
 
   // public methods
 
+  ngOnInit() {
+    this.refreshHeroes();
+  }
+
   onSelect(hero: Hero): void {
     this.selectedHero = hero;
   }
 
-  getHeroes(): void {
-    this.heroes = this.heroService.getHeroes();
-  }
-
-  ngOnInit() {
-    this.getHeroes();
+  /* Async operation */
+  refreshHeroes(): void {
+    var obs = this.heroService.getHeroes();
+    obs.subscribe(heroes => this.heroes = heroes);
   }
 
 }
