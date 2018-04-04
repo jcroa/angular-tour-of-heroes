@@ -5,13 +5,17 @@ import { of } from 'rxjs/observable/of';
 
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { MessageService } from './message.service';
 
 @Injectable()
 export class HeroService {
 
-  constructor(private messageService: MessageService) { }
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService) { 
+  }
 
   /* Returns an Observable object for getting of list of all heroes */
   getHeroes(): Observable<Hero[]> {
