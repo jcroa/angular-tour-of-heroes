@@ -21,10 +21,38 @@ export class HeroesComponent implements OnInit {
     this.refreshHeroes();
   }
 
-  /* Async operation */
+  /* Async operation. old name was getHeroes */
   refreshHeroes(): void {
-    var obs = this.heroService.getHeroes();
-    obs.subscribe(heroes => this.heroes = heroes);
+    this.heroService.getHeroes()
+      .subscribe(heroes => this.heroes = heroes);
+  }
+
+  add(name: string): void {
+    // remove spaces from begining and ending
+    name = name.trim();
+    if (!name) { 
+      // TODO - show message. No name has been written
+      return; 
+    }
+    this.heroService.addHero({ name } as Hero)
+      .subscribe(hero => {
+        this.heroes.push(hero);
+      });
+  }
+
+  delete(hero: Hero): void {
+    var _this = this;
+    var elem = document.getElementById("hero-" + hero.id);
+    if (elem) {
+      elem.classList.add("deleting");
+    }
+    // TODO - add class for render hero "obscured"
+    this.heroService.deleteHero(hero).subscribe(
+      () => {
+        _this.heroes = _this.heroes.filter(h => h !== hero);
+        alert(hero.name + " has been deleted");
+      }
+    );
   }
 
 }

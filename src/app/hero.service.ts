@@ -26,11 +26,6 @@ export class HeroService {
 
   /* Returns an Observable object for getting of list of all heroes */
   getHeroes(): Observable<Hero[]> {
-    // Todo: send the message _after_ fetching the heroes
-
-    //this.messageService.add('HeroService: fetched heroes');
-    //return of(HEROES);
-
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
         tap(heroes => this.log(`fetched heroes`)),
@@ -39,11 +34,6 @@ export class HeroService {
   }
 
   getHero(id: number): Observable<Hero> {
-    // Todo: send the message _after_ fetching the hero
-
-    //this.messageService.add(`HeroService: fetched hero id=${id}`);
-    //return of(HEROES.find(hero => hero.id === id));
-
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url)
       .pipe(
@@ -61,8 +51,31 @@ export class HeroService {
       );
   }
 
+  /** POST: add a new hero to the server */
+  addHero (hero: Hero): Observable<Hero> {
+    // hero.id is undefined.
+    return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions)
+      .pipe(
+        /* hero.id will be a new value */
+        tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
+        catchError(this.handleErrorDelegate<Hero>('addHero'))
+      );
+  }
+
+  /** DELETE: delete the hero from the server */
+  deleteHero (hero: Hero | number): Observable<Hero> {
+    const id = typeof hero === 'number' ? hero : hero.id;
+    const url = `${this.heroesUrl}/${id}`;
+
+    return this.http.delete<Hero>(url, this.httpOptions)
+      .pipe(
+        tap(_ => this.log(`deleted hero id=${id}`)),
+        catchError(this.handleErrorDelegate<Hero>('deleteHero'))
+      );
+  }
+
   /**
-   * Handle Http operation that failed.
+   * Return a function for error handling when a http operation fails.
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
